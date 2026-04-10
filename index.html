@@ -260,15 +260,54 @@ addMsg("Troco para quanto?");
 }, "troco");
 etapa=8;
 }else{
-finalizar();
+confirmarPedido();
 }
 return;
 }
 
 if(etapa===8){
 pedido.troco = resposta;
-finalizar();
+confirmarPedido();
+return;
 }
+
+if(etapa===9){
+
+if(resposta.includes("Confirmar")){
+finalizar();
+}else{
+botDigitando(()=>{
+addMsg("Sem problemas! Vamos começar novamente 😊<br>Qual seu nome?");
+}, "reiniciar");
+
+etapa=1;
+}
+
+return;
+}
+
+}
+
+function confirmarPedido(){
+
+let resumo = "📋 <b>Confirme seu pedido:</b><br><br>";
+resumo += "👤 "+pedido.nome+"<br>";
+resumo += "📍 "+pedido.endereco+"<br>";
+resumo += "🍕 "+pedido.quantidade+" pizza(s)<br>";
+resumo += "Sabores: "+pedido.pizza1+" / "+pedido.pizza2+"<br>";
+resumo += "🥤 "+pedido.refri+"<br>";
+resumo += "💳 "+pedido.pagamento+"<br>";
+
+if(pedido.pagamento==="Dinheiro"){
+resumo += "💰 Troco: "+pedido.troco+"<br>";
+}
+
+botDigitando(()=>{
+addMsg(resumo);
+addOpcoes(["✅ Confirmar Pedido","❌ Alterar Pedido"]);
+}, "confirmacao");
+
+etapa=9;
 
 }
 
@@ -284,7 +323,7 @@ pedido.total = total.toFixed(2);
 
 botDigitando(()=>{
 
-addMsg("✅ Pedido pronto!<br>Total: R$ "+pedido.total);
+addMsg("✅ Pedido confirmado!<br>Total: R$ "+pedido.total);
 
 let msg = "🍕 *NOVO PEDIDO* %0A%0A";
 msg += "*Cliente:* "+pedido.nome+"%0A";
@@ -311,6 +350,9 @@ etapa=0;
 }
 
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
