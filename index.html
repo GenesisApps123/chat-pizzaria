@@ -2,13 +2,13 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>QueroPizza 🍕</title>
+<title>Chat Pizza</title>
 
 <style>
 body{
-  margin:0;
   font-family:Arial;
   background:#f4f4f4;
+  margin:0;
 }
 
 /* TOPO */
@@ -31,20 +31,27 @@ body{
 .status{ font-size:12px; opacity:0.8; }
 
 /* CHAT */
-#chat{
+#mensagens{
   padding:10px;
   margin-bottom:120px;
 }
 
 .msg{
-  background:#fff;
+  background:white;
   padding:10px;
   margin:5px 0;
   border-radius:8px;
   max-width:80%;
 }
 
-.bot{ background:#e1ffc7; }
+.user{
+  background:#d1e7ff;
+  margin-left:auto;
+}
+
+.bot{
+  background:#e1ffc7;
+}
 
 /* INPUT */
 .inputArea{
@@ -92,7 +99,7 @@ button{
 </div>
 
 <!-- CHAT -->
-<div id="chat"></div>
+<div id="mensagens"></div>
 
 <!-- INPUT -->
 <div class="inputArea">
@@ -107,23 +114,28 @@ button{
 
 let etapa = 0;
 
+/* 🔥 NOVO: OBJETO DO PEDIDO */
 let pedido = {
-  nome:"",
-  pizzas:[],
-  bebida:"",
-  total:0
+  nome: "",
+  pizzas: [],
+  bebida: "",
+  total: 0
 };
 
 /* MENSAGEM */
-function addMsg(texto, tipo="bot"){
+function addMsg(texto, classe="bot"){
   let div = document.createElement("div");
-  div.className = "msg " + tipo;
+  div.className = "msg " + classe;
   div.innerHTML = texto;
-  document.getElementById("chat").appendChild(div);
+  document.getElementById("mensagens").appendChild(div);
+  scroll();
+}
+
+function scroll(){
   window.scrollTo(0,document.body.scrollHeight);
 }
 
-/* DIGITANDO */
+/* 🔥 NOVO: STATUS DIGITANDO */
 function botDigitando(callback){
   let status = document.getElementById("status");
   status.innerHTML = "⌨️ Digitando...";
@@ -134,7 +146,7 @@ function botDigitando(callback){
   },1500);
 }
 
-/* CARRINHO */
+/* 🔥 NOVO: ATUALIZA CARRINHO */
 function atualizarCarrinho(){
 
 let html = "<b>🧾 Seu pedido:</b><br>";
@@ -150,7 +162,6 @@ if(pedido.bebida){
 html += `<br><b>Total: R$ ${pedido.total}</b>`;
 
 document.getElementById("carrinho").innerHTML = html;
-
 }
 
 /* ENVIAR */
@@ -162,9 +173,10 @@ let texto = input.value;
 if(!texto) return;
 
 addMsg(texto,"user");
-input.value="";
+input.value = "";
 
-/* FLUXO */
+/* FLUXO ORIGINAL + ADAPTAÇÃO */
+
 if(etapa == 0){
   pedido.nome = texto;
 
@@ -180,7 +192,7 @@ else if(etapa == 1){
 
   let qtd = parseInt(texto);
 
-  if(isNaN(qtd) || qtd <=0){
+  if(isNaN(qtd) || qtd <= 0){
     addMsg("Digite um número válido.");
     return;
   }
@@ -189,7 +201,7 @@ else if(etapa == 1){
   pedido.contador = 1;
 
   botDigitando(()=>{
-    addMsg(`Escolha o sabor da pizza 1`);
+    addMsg("Escolha o sabor da pizza 1");
   });
 
   etapa = 2;
@@ -207,12 +219,13 @@ else if(etapa == 2){
     pedido.contador++;
 
     botDigitando(()=>{
-      addMsg(`Escolha o sabor da pizza ${pedido.contador}`);
+      addMsg("Escolha o sabor da pizza " + pedido.contador);
     });
 
-  }else{
+  } else {
+
     botDigitando(()=>{
-      addMsg("Quer bebida? (Digite o nome ou 'não')");
+      addMsg("Deseja bebida? (Digite o nome ou 'não')");
     });
 
     etapa = 3;
@@ -247,22 +260,21 @@ else if(etapa == 4){
   if(texto.toLowerCase() == "sim"){
 
     let msg = `Olá, quero pedir:%0A
-Nome: ${pedido.nome}%0A
-`;
+Nome: ${pedido.nome}%0A`;
 
-pedido.pizzas.forEach((p,i)=>{
-  msg += `Pizza ${i+1}: ${p}%0A`;
-});
+    pedido.pizzas.forEach((p,i)=>{
+      msg += `Pizza ${i+1}: ${p}%0A`;
+    });
 
-if(pedido.bebida){
-  msg += `Bebida: ${pedido.bebida}%0A`;
-}
+    if(pedido.bebida){
+      msg += `Bebida: ${pedido.bebida}%0A`;
+    }
 
-msg += `Total: R$ ${pedido.total}`;
+    msg += `Total: R$ ${pedido.total}`;
 
     window.open(`https://wa.me/5588999999999?text=${msg}`);
 
-  }else{
+  } else {
     addMsg("Pedido cancelado.");
   }
 }
@@ -271,10 +283,12 @@ msg += `Total: R$ ${pedido.total}`;
 
 /* INÍCIO */
 window.onload = function(){
+
   botDigitando(()=>{
     addMsg("Olá! 👋 Bem-vindo à QueroPizza 🍕<br><br>Qual seu nome?");
   });
-};
+
+}
 
 </script>
 
